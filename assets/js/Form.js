@@ -1,4 +1,4 @@
-var planningserver = 'http://openkvk.nl:9393/rrrr?';
+var planningserver = '/rrrr?';
 
 String.prototype.lpad = function(padString, length) {
     var str = this;
@@ -60,7 +60,7 @@ var bag42 = function( request, response ) {
 
 var bliksem_geocoder = function( request, response ) {
   $.ajax({
-    url: "http://ovh.openkvk.nl:8888/" + request.term + '*',
+    url: "/geocoder/" + request.term + '*',
     dataType: "json",
     success: function( data ) {
       response( $.map( data.features, function( item ) {
@@ -82,7 +82,7 @@ var Locale = Locale || {};
 Locale.autocompleteMessages = {
         noResults: "Geen resultaten gevonden.",
         results: function( amount ) {
-            return amount + ( amount > 1 ? " resultaten zijn " : " Resultaat is" ) + " beschikbaar, gebruik de omhoog en omlaag pijltoetsen om te navigeren.";
+            return amount + ( amount > 1 ? " resultaten zijn " : " resultaat is" ) + " beschikbaar, gebruik de omhoog en omlaag pijltoetsen om te navigeren.";
         }
 }
 
@@ -299,7 +299,7 @@ function laterAdvice(){
           maxEpoch = itin.startTime;
       }
   });
-  maxEpoch += 60*1000;
+  maxEpoch += 120*1000;
   var plannerreq = makePlanRequest();
   plannerreq.arriveBy = false;
   plannerreq.date = epochtoIS08601date(maxEpoch);
@@ -339,26 +339,26 @@ function timeFromEpoch(epoch){
 var itineraries = null;
 
 function legItem(leg){
-    var legItem = $('<li class="list-group-item"><div></div></li>');
+    var legItem = $('<li class="list-group-item advice-leg"><div></div></li>');
     if (leg.mode == 'WALK'){
         if (leg.from.name == leg.to.name){
             return;
         }
         legItem.append('<div class="list-group-item-heading"><h4 class="leg-header"><b>'+Locale.walk+'</b></h4></div>');
     } else {
-        legItem.append('<div class="list-group-item-heading"><h4 class="leg-header"><b>'+leg.route+'</b> '+leg.headsign+'</h4><div class="leg-header-agency-name">'+leg.agencyName+'</div>');
+        legItem.append('<div class="list-group-item-heading"><h4 class="leg-header"><b>'+leg.route+'</b> '+leg.headsign+'<span class="leg-header-agency-name"><small>'+leg.agencyName+'</small></span></h4>');
     }
     if (leg.from.platformCode && leg.mode == 'RAIL'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+' <i>'+Locale.platformrail+' '+leg.from.platformCode+'</i></div>');
+        legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.from.platformCode+'</div>');
     }else if (leg.from.platformCode && leg.mode != 'WALK'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+' <i>'+Locale.platform+' '+leg.from.platformCode+'</i></div>');
+        legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+' <small class="grey">'+Locale.platform+'</small> '+leg.from.platformCode+'</div>');
     }else{
         legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+'</div>');
     }
     if (leg.to.platformCode && leg.mode == 'RAIL'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+' <i>'+Locale.platformrail+' '+leg.to.platformCode+'</i></div>');
+        legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.to.platformCode+'</div>');
     }else if (leg.to.platformCode && leg.mode != 'WALK'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+' <i>'+Locale.platform+' '+leg.to.platformCode+'</i></div>');
+        legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+' <small class="grey">'+Locale.platform+'</small> '+leg.to.platformCode+'</div>');
     }else{
         legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+'</div>');
     }
@@ -594,6 +594,7 @@ function getTime(){
 
 function setupAutoComplete(){
     $( "#planner-options-from" ).autocomplete({
+        autoFocus: true,
         minLength: 3,
         //appendTo: "#planner-options-from-autocompletecontainer",
         messages : Locale.autocompleteMessages,
@@ -620,6 +621,7 @@ function setupAutoComplete(){
         }
     });
     $( "#planner-options-via" ).autocomplete({
+        autoFocus: true,
         minLength: 3,
         //appendTo: "#planner-options-via-autocompletecontainer",
         messages : Locale.autocompleteMessages,
@@ -646,6 +648,7 @@ function setupAutoComplete(){
         }
     });
     $( "#planner-options-dest" ).autocomplete({
+        autoFocus: true,
         minLength: 3,
         //appendTo: "#planner-options-dest-autocompletecontainer",
         messages : Locale.autocompleteMessages,
@@ -654,8 +657,8 @@ function setupAutoComplete(){
             $( "#planner-options-dest-latlng" ).val( "" );
         },
         focus: function( event, ui ) {
-            $( "#planner-options-dest" ).val( ui.item.label );
-            $( "#planner-options-dest-latlng" ).val( ui.item.latlng );
+            //$( "#planner-options-dest" ).val( ui.item.label );
+            //$( "#planner-options-dest-latlng" ).val( ui.item.latlng );
             return false;
         },
         select: function( event, ui ) {
