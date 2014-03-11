@@ -517,7 +517,9 @@ function setupDatetime(){
         $('#planner-options-timeformat').attr('aria-hidden',true);
     }
     setTime(String(currentTime.getHours()).lpad('0',2)+':'+String(currentTime.getMinutes()).lpad('0',2));
-    setDate(currentTime.toJSON().slice(0,10));
+    function pad(n) { return n < 10 ? '0' + n : n }
+    var date = currentTime.getFullYear() + '-' + pad(currentTime.getMonth() + 1) + '-' + pad(currentTime.getDate());
+    setDate(date);
     if(Modernizr.inputtypes.date){
         $('#planner-options-dateformat').hide();
         $('#planner-options-dateformat').attr('aria-hidden',true);
@@ -600,8 +602,8 @@ function setupAutoComplete(){
             $( "#planner-options-from-latlng" ).val( "" );
         },
         focus: function( event, ui ) {
-            $( "#planner-options-from" ).val( ui.item.label );
-            $( "#planner-options-from-latlng" ).val( ui.item.latlng );
+            //$( "#planner-options-from" ).val( ui.item.label );
+            //$( "#planner-options-from-latlng" ).val( ui.item.latlng );
             return false;
         },
         select: function( event, ui ) {
@@ -610,7 +612,8 @@ function setupAutoComplete(){
             return false;
         },
         response: function( event, ui ) {
-           if ( ui.content.length === 1 ) {
+           if ( ui.content.length === 1 &&
+                ui.content[0].label.toLowerCase().indexOf( $( "#planner-options-from" ).val().toLowerCase() ) === 0 ) {
               $( "#planner-options-from" ).val( ui.content[0].label );
               $( "#planner-options-from-latlng" ).val( ui.content[0].latlng );
            }
@@ -625,8 +628,8 @@ function setupAutoComplete(){
             $( "#planner-options-from-latlng" ).val( "" );
         },
         focus: function( event, ui ) {
-            $( "#planner-options-via" ).val( ui.item.label );
-            $( "#planner-options-via-latlng" ).val( ui.item.latlng );
+            //$( "#planner-options-via" ).val( ui.item.label );
+            //$( "#planner-options-via-latlng" ).val( ui.item.latlng );
             return false;
         },
         select: function( event, ui ) {
@@ -635,7 +638,8 @@ function setupAutoComplete(){
             return false;
         },
         response: function( event, ui ) {
-           if ( ui.content.length === 1 ) {
+           if ( ui.content.length === 1 &&
+                ui.content[0].label.toLowerCase().indexOf( $( "#planner-options-via" ).val().toLowerCase() ) === 0 ) {
               $( "#planner-options-via" ).val( ui.content[0].label );
               $( "#planner-options-via-latlng" ).val( ui.content[0].latlng );
            }
@@ -660,7 +664,8 @@ function setupAutoComplete(){
             return false;
         },
         response: function( event, ui ) {
-           if ( ui.content.length === 1 ) {
+           if ( ui.content.length === 1 &&
+                ui.content[0].label.toLowerCase().indexOf( $( "#planner-options-dest" ).val().toLowerCase() ) === 0 ) {
               $( "#planner-options-dest" ).val( ui.content[0].label );
               $( "#planner-options-dest-latlng" ).val( ui.content[0].latlng );
            }
