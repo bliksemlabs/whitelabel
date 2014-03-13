@@ -78,37 +78,6 @@ var bliksem_geocoder = function( request, response ) {
 var Geocoder = Geocoder || {};
 Geocoder.geocoder = bliksem_geocoder;
 
-var Locale = Locale || {};
-Locale.autocompleteMessages = {
-        noResults: "Geen resultaten gevonden.",
-        results: function( amount ) {
-            return amount + ( amount > 1 ? " resultaten zijn " : " resultaat is" ) + " beschikbaar, gebruik de omhoog en omlaag pijltoetsen om te navigeren.";
-        }
-}
-
-Locale.startpointEmpty = "Geen startpunt ingevoerd";
-Locale.noStartpointSelected = "Geen startpunt geselecteerd";
-Locale.destinationEmpty = "Geen bestemming ingevoerd";
-Locale.noDestinationSelected = "Geen bestemming geselecteerd";
-Locale.noValidDate = "Geen geldige datum ingevoerd";
-Locale.noValidTime = "Geen geldige tijd ingevoerd";
-Locale.dateTooEarly = function ( minDate8601 ) { return "De planner werkt pas vanaf "+minDate8601.split('-').reverse().join('-'); }
-Locale.dateTooLate = function ( maxDate8601 ) { return "De planner heeft geen dienstregeling na "+maxDate8601.split('-').reverse().join('-'); }
-Locale.from = "Van";
-Locale.via = "Via";
-Locale.to = "Naar";
-Locale.months = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
-Locale.days = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
-Locale.earlier = 'Eerder';
-Locale.later = 'Later';
-Locale.noAdviceFound = 'Geen reisadvies gevonden';
-Locale.loading = 'Bezig met laden';
-Locale.walk = 'Loop';
-Locale.platformrail = 'Spoor';
-Locale.platform = 'Perron';
-Locale.loading = 'Bezig...';
-Locale.amountTransfers = function ( transfers ) { if (transfers == 0) { return 'Direct'; } else { return transfers+ 'x overstappen';} }
-
 function initializeForms(){
     setupAutoComplete();
     setupDatetime();
