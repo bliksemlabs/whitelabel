@@ -650,7 +650,7 @@ function setupAutoComplete(){
 function switchLocale() {
 	$(".label-from").text(Locale.from);
 	$(".label-via").text(Locale.via);
-	$(".label-dest").text(Locale.dest);
+	$(".label-dest").text(Locale.to);
 	$(".label-time").text(Locale.time);
 	$(".label-date").text(Locale.date);
 	$(".label-edit").text(Locale.edit);
@@ -661,6 +661,6 @@ function switchLocale() {
 
 	$("#planner-options-from").attr('placeholder', Locale.geocoderInput).attr('title', Locale.from);
 	$("#planner-options-via").attr('placeholder', Locale.geocoderInput).attr('title', Locale.via);
-	$("#planner-options-dest").attr('placeholder', Locale.geocoderInput).attr('title', Locale.dest);
+	$("#planner-options-dest").attr('placeholder', Locale.geocoderInput).attr('title', Locale.to);
 	$("#planner-options-submit").attr('data-loading-text', Locale.loading);
 }

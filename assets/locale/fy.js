@@ -2,7 +2,7 @@ var Locale = {}
 
 Locale.dateFormat = 'mm-dd-jjjj';
 Locale.timeFormat = 'hh:mm';
-Locale.edit = "Wizig reis";
+Locale.edit = "Wizigje reis";
 Locale.plan = "Plan reis";
 Locale.date = "Datum";
 Locale.time = "Tiid";
