@@ -1,5 +1,6 @@
 var Locale = {}
 
+Locale.direct = "streekrjocht"
 Locale.dateFormat = 'mm-dd-jjjj';
 Locale.timeFormat = 'hh:mm';
 Locale.edit = "Wizigje reis";
