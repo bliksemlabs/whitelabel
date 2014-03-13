@@ -317,7 +317,7 @@ function legItem(leg){
         }
         legItem.append('<div class="list-group-item-heading"><h4 class="leg-header"><b>'+Locale.walk+'</b></h4></div>');
     } else {
-        legItem.append('<div class="list-group-item-heading"><h4 class="leg-header"><b>'+leg.route+'</b> '+leg.headsign+'<span class="leg-header-agency-name"><small>'+leg.agencyName+'</small></span></h4>');
+        legItem.append('<div class="list-group-item-heading"><h4 class="leg-header"><b>'+leg.route+'</b> '+leg.headsign.replace(" via ", " "+Locale.via.toLowerCase()+" ")+'<span class="leg-header-agency-name"><small>'+leg.agencyName+'</small></span></h4>');
     }
     if (leg.from.platformCode && leg.mode == 'RAIL'){
         legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.from.platformCode+'</div>');
