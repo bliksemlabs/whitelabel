@@ -78,6 +78,8 @@ var bliksem_geocoder = function( request, response ) {
 var Geocoder = Geocoder || {};
 Geocoder.geocoder = bliksem_geocoder;
 
+switchLocale();
+
 function initializeForms(){
     setupAutoComplete();
     setupDatetime();
@@ -643,4 +645,22 @@ function setupAutoComplete(){
            }
         }
     });
+}
+
+function switchLocale() {
+	$(".label-from").text(Locale.from);
+	$(".label-via").text(Locale.via);
+	$(".label-dest").text(Locale.dest);
+	$(".label-time").text(Locale.time);
+	$(".label-date").text(Locale.date);
+	$(".label-edit").text(Locale.edit);
+	$(".label-plan").text(Locale.plan);
+
+	$(".planner-options-dateformat").text(Locale.dateFormat);
+	$(".planner-options-timeformat").text(Locale.timeFormat);
+
+	$("#planner-options-from").attr('placeholder', Locale.geocoderInput).attr('title', Locale.from);
+	$("#planner-options-via").attr('placeholder', Locale.geocoderInput).attr('title', Locale.via);
+	$("#planner-options-dest").attr('placeholder', Locale.geocoderInput).attr('title', Locale.dest);
+	$("#planner-options-submit").attr('data-loading-text', Locale.loading);
 }

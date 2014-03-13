@@ -36,19 +36,3 @@ Locale.autocompleteMessages = {
             return amount + ( amount > 1 ? " resultaten zijn " : " resultaat is" ) + " beschikbaar, gebruik de omhoog en omlaag pijltoetsen om te navigeren.";
         }
 }
-
-$(".label-from").text(Locale.from);
-$(".label-via").text(Locale.via);
-$(".label-dest").text(Locale.dest);
-$(".label-time").text(Locale.time);
-$(".label-date").text(Locale.date);
-$(".label-edit").text(Locale.edit);
-$(".label-plan").text(Locale.plan);
-
-$(".planner-options-dateformat").text(Locale.dateFormat);
-$(".planner-options-timeformat").text(Locale.timeFormat);
-
-$("#planner-options-from").attr('placeholder', Locale.geocoderinput);
-$("#planner-options-via").attr('placeholder', Locale.geocoderinput);
-$("#planner-options-dest").attr('placeholder', Locale.geocoderinput);
-$("#planner-options-submit").attr('data-loading-text', Locale.loading);
