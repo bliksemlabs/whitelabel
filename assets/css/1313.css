@@ -98,6 +98,10 @@ input[type=number]::-webkit-inner-spin-button {
 }
 
 .leg-header-agency-name{
-  display: inline-block;
-  float : right;
+  position: absolute;
+  right: 10px;
+}
+
+.grey {
+  color: #999;
 }
