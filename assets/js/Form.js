@@ -304,7 +304,11 @@ function prettyDateEpoch(epoch){
 
 function timeFromEpoch(epoch){
   var date = new Date(epoch);
-  return String(date.getHours()).lpad('0',2)+':'+String(date.getMinutes()).lpad('0',2);
+  var minutes = date.getMinutes();
+  if (date.getSeconds()>= 30){
+      minutes += 1;
+  }
+  return String(date.getHours()).lpad('0',2)+':'+String(minutes).lpad('0',2);
 }
 
 var itineraries = null;
@@ -319,19 +323,45 @@ function legItem(leg){
     } else {
         legItem.append('<div class="list-group-item-heading"><h4 class="leg-header"><b>'+leg.route+'</b> '+leg.headsign.replace(" via ", " "+Locale.via.toLowerCase()+" ")+'<span class="leg-header-agency-name"><small>'+leg.agencyName+'</small></span></h4>');
     }
+    var startTime = timeFromEpoch(leg.startTime-(leg.departureDelay ? leg.departureDelay : 0)*1000);
+    var delayMin = (leg.departureDelay/60)|0;
+    if ((leg.departureDelay%60)>=30){
+        delayMin += 1;
+    }
+    if (delayMin > 0){
+        startTime += '<span class="delay"> +'+ delayMin+'</span>';
+    }else if (delayMin > 0){
+        startTime += '<span class="early"> '+ delayMin+'</span>';
+    }else if (leg.departureDelay != null){
+        startTime += '<span class="ontime"> ✓</span>';
+    }
+    
+    var endTime = timeFromEpoch(leg.endTime-(leg.arrivalDelay ? leg.arrivalDelay : 0)*1000);
+    var delayMin = (leg.arrivalDelay/60)|0;
+    if ((leg.arrivalDelay%60)>=30){
+        delayMin += 1;
+    }
+    if (delayMin > 0){
+        endTime += '<span class="delay"> +'+ delayMin+'</span>';
+    }else if (delayMin > 0){
+        endTime += '<span class="early"> '+ delayMin+'</span>';
+    }else if (leg.arrivalDelay != null){
+        endTime += '<span class="ontime"> ✓</span>';
+    }
+
     if (leg.from.platformCode && leg.mode == 'RAIL'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.from.platformCode+'</div>');
+        legItem.append('<div><b>'+startTime+'</b> '+leg.from.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.from.platformCode+'</div>');
     }else if (leg.from.platformCode && leg.mode != 'WALK'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+' <small class="grey">'+Locale.platform+'</small> '+leg.from.platformCode+'</div>');
+        legItem.append('<div><b>'+startTime+'</b> '+leg.from.name+' <small class="grey">'+Locale.platform+'</small> '+leg.from.platformCode+'</div>');
     }else{
-        legItem.append('<div><b>'+timeFromEpoch(leg.startTime)+'</b> '+leg.from.name+'</div>');
+        legItem.append('<div><b>'+startTime+'</b> '+leg.from.name+'</div>');
     }
     if (leg.to.platformCode && leg.mode == 'RAIL'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.to.platformCode+'</div>');
+        legItem.append('<div><b>'+endTime+'</b> '+leg.to.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.to.platformCode+'</div>');
     }else if (leg.to.platformCode && leg.mode != 'WALK'){
-        legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+' <small class="grey">'+Locale.platform+'</small> '+leg.to.platformCode+'</div>');
+        legItem.append('<div><b>'+endTime+'</b> '+leg.to.name+' <small class="grey">'+Locale.platform+'</small> '+leg.to.platformCode+'</div>');
     }else{
-        legItem.append('<div><b>'+timeFromEpoch(leg.endTime)+'</b> '+leg.to.name+'</div>');
+        legItem.append('<div><b>'+endTime+'</b> '+leg.to.name+'</div>');
     }
     return legItem;
 }

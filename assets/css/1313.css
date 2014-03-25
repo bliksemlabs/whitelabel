@@ -105,3 +105,15 @@ input[type=number]::-webkit-inner-spin-button {
 .grey {
   color: #999;
 }
+
+.delay {
+  color : red;
+}
+
+.early {
+  color : blue;
+}
+
+.ontime {
+  color : green;
+}
