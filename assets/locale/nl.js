@@ -19,16 +19,14 @@ Locale.via = "Via";
 Locale.to = "Naar";
 Locale.date = "Datum";
 Locale.time = "Tijd";
-Locale.months = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
-Locale.days = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+Locale.months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+Locale.days = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
 Locale.earlier = 'Eerder';
 Locale.later = 'Later';
 Locale.noAdviceFound = 'Geen reisadvies gevonden';
-Locale.loading = 'Bezig met laden';
 Locale.walk = 'Loop';
 Locale.platformrail = 'Spoor';
 Locale.platform = 'Perron';
-Locale.loading = 'Bezig...';
 Locale.amountTransfers = function ( transfers ) { if (transfers == 0) { return 'Direct'; } else { return transfers+ 'x overstappen';} }
 Locale.autocompleteMessages = {
         noResults: "Geen resultaten gevonden.",
