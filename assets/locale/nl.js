@@ -24,11 +24,9 @@ Locale.days = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','za
 Locale.earlier = 'Eerder';
 Locale.later = 'Later';
 Locale.noAdviceFound = 'Geen reisadvies gevonden';
-Locale.loading = 'Bezig met laden';
 Locale.walk = 'Loop';
 Locale.platformrail = 'Spoor';
 Locale.platform = 'Perron';
-Locale.loading = 'Bezig...';
 Locale.amountTransfers = function ( transfers ) { if (transfers == 0) { return 'Direct'; } else { return transfers+ 'x overstappen';} }
 Locale.autocompleteMessages = {
         noResults: "Geen resultaten gevonden.",

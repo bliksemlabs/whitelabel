@@ -27,7 +27,7 @@ Locale.noAdviceFound = 'No valid trips found';
 Locale.walk = 'Walk';
 Locale.platformrail = 'Platform';
 Locale.platform = 'Platform';
-Locale.amountTransfers = function ( transfers ) { if (transfers == 0) { return 'Direct'; } else { return transfers+ 'x transfers';} }
+Locale.amountTransfers = function ( transfers ) { if (transfers == 0) { return 'Direct'; } else { return transfers+ ' transfers';} }
 Locale.autocompleteMessages = {
         noResults: "No results found.",
         results: function( amount ) {
