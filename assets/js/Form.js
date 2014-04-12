@@ -1,4 +1,5 @@
-var planningserver = '/rrrr?';
+var prefix = 'https://1313.nl';
+var planningserver = prefix+'/rrrr?';
 
 String.prototype.lpad = function(padString, length) {
     var str = this;
@@ -60,7 +61,7 @@ var bag42 = function( request, response ) {
 
 var bliksem_geocoder = function( request, response ) {
   $.ajax({
-    url: "/geocoder/" + request.term + '*',
+    url: prefix+"/geocoder/" + request.term + '*',
     dataType: "json",
     success: function( data ) {
       response( $.map( data.features, function( item ) {
@@ -521,6 +522,7 @@ function setupDatetime(){
     function pad(n) { return n < 10 ? '0' + n : n }
     var date = currentTime.getFullYear() + '-' + pad(currentTime.getMonth() + 1) + '-' + pad(currentTime.getDate());
     setDate(date);
+    $("#planner-options-date").datepicker();
     if(Modernizr.inputtypes.date){
         $('#planner-options-dateformat').hide();
         $('#planner-options-dateformat').attr('aria-hidden',true);
