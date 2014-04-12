@@ -1,5 +1,4 @@
-var prefix = 'https://1313.nl';
-var planningserver = prefix+'/rrrr?';
+var planningserver = whitelabel_prefix+'/rrrr?';
 
 String.prototype.lpad = function(padString, length) {
     var str = this;
@@ -61,7 +60,7 @@ var bag42 = function( request, response ) {
 
 var bliksem_geocoder = function( request, response ) {
   $.ajax({
-    url: prefix+"/geocoder/" + request.term + '*',
+    url: whitelabel_prefix+"/geocoder/" + request.term + '*',
     dataType: "json",
     success: function( data ) {
       response( $.map( data.features, function( item ) {
@@ -195,7 +194,7 @@ function makeBliksemReq(plannerreq){
   }else{
     bliksemReq['depart'] = true
   }
-  
+
   bliksemReq['from-latlng'] = plannerreq['fromLatLng'];
   bliksemReq['to-latlng'] = plannerreq['toLatLng'];
   bliksemReq['date'] = plannerreq['date'] + 'T' + plannerreq['time'];
@@ -336,7 +335,7 @@ function legItem(leg){
     }else if (leg.departureDelay != null){
         startTime += '<span class="ontime"> ✓</span>';
     }
-    
+
     var endTime = timeFromEpoch(leg.endTime-(leg.arrivalDelay ? leg.arrivalDelay : 0)*1000);
     var delayMin = (leg.arrivalDelay/60)|0;
     if ((leg.arrivalDelay%60)>=30){
@@ -522,7 +521,23 @@ function setupDatetime(){
     function pad(n) { return n < 10 ? '0' + n : n }
     var date = currentTime.getFullYear() + '-' + pad(currentTime.getMonth() + 1) + '-' + pad(currentTime.getDate());
     setDate(date);
-    $("#planner-options-date").datepicker();
+    $("#planner-options-date").datepicker( {
+       dateFormat: Locale.dateFormatPicker,
+       dayNames: Locale.days,
+       dayNamesMin : Locale.daysMin,
+       monthNames: Locale.months,
+       defaultDate: 0,
+       hideIfNoPrevNext: true,
+       minDate: whitelabel_minDate,
+       maxDate: whitelabel_maxDate
+    });
+
+    /* Read aloud the selected dates */
+    $(document).on("mouseenter", ".ui-state-default", function() {
+        var text = $(this).text()+" "+$(".ui-datepicker-month",$(this).parents()).text()+" "+$(".ui-datepicker-year",$(this).parents()).text();
+        $("#planner-options-date-messages").text(text);
+    });
+
     if(Modernizr.inputtypes.date){
         $('#planner-options-dateformat').hide();
         $('#planner-options-dateformat').attr('aria-hidden',true);
@@ -530,46 +545,38 @@ function setupDatetime(){
 };
 
 function setDate(iso8601){
-    if(Modernizr.inputtypes.date){
-        $('#planner-options-date').val(iso8601);
-    } else {
-        parts = iso8601.split('-');
-        var d = new Date(parts[0],parseInt(parts[1])-1,parts[2]);
-        $('#planner-options-date').val(String(d.getDate()).lpad('0',2)+'-'+String((d.getMonth()+1)).lpad('0',2)+'-'+String(d.getFullYear()).slice(2));
-    }
+    parts = iso8601.split('-');
+    var d = new Date(parts[0],parseInt(parts[1])-1,parts[2]);
+    $('#planner-options-date').val(String(d.getDate()).lpad('0',2)+'-'+String((d.getMonth()+1)).lpad('0',2)+'-'+String(d.getFullYear()));
 }
 
 function getDate(){
-    if(Modernizr.inputtypes.date){
-        return $('#planner-options-date').val();
-    } else {
-        var elements = $('#planner-options-date').val().split('-');
-        var month = null;
-        var day = null;
-        var year = String(currentTime.getFullYear());
-        if (elements.length == 3){
-            if (elements[2].length == 2){
-                year = year.slice(0,2) + elements[2];
-            }else if (elements[2].length == 4){
-                year = elements[2];
-            }
-            if (parseInt(year) < 2013){
-                return null;
-            }
-        }
-        if (parseInt(elements[1]) >= 1 && parseInt(elements[1]) <= 12){
-           month = elements[1];
-        }else{
-           return null;
-        }
-        if (parseInt(elements[1]) >= 1 && parseInt(elements[1]) <= 31){
-           day = elements[0];
-        }else{
-           return null;
-        }
-        setDate(year+'-'+month+'-'+day);
-        return year+'-'+month+'-'+day;
+    var elements = $('#planner-options-date').val().split('-');
+    var month = null;
+    var day = null;
+    var year = String(currentTime.getFullYear());
+    if (elements.length == 3){
+      if (elements[2].length == 2){
+        year = year.slice(0,2) + elements[2];
+      }else if (elements[2].length == 4){
+        year = elements[2];
+      }
+      if (parseInt(year) < 2013){
+        return null;
+      }
     }
+    if (parseInt(elements[1]) >= 1 && parseInt(elements[1]) <= 12){
+      month = elements[1];
+    }else{
+      return null;
+    }
+    if (parseInt(elements[1]) >= 1 && parseInt(elements[1]) <= 31){
+      day = elements[0];
+    }else{
+      return null;
+    }
+    setDate(year+'-'+month+'-'+day);
+    return year+'-'+month+'-'+day;
 }
 
 function getTime(){
@@ -688,9 +695,16 @@ function switchLocale() {
 	$(".label-edit").text(Locale.edit);
 	$(".label-plan").text(Locale.plan);
 
-	$(".planner-options-dateformat").text(Locale.dateFormat);
 	$(".planner-options-timeformat").text(Locale.timeFormat);
 
+  $("#planner-options-date").datepicker('option', {
+      dateFormat: Locale.dateFormatPicker, /* Also need this on init */
+      dayNames: Locale.days,
+      dayNamesMin : Locale.daysMin,
+      monthNames: Locale.months
+  });
+
+  $("#planner-options-date").attr('aria-label', Locale.dateAriaLabel);
 	$("#planner-options-from").attr('placeholder', Locale.geocoderInput).attr('title', Locale.from);
 	$("#planner-options-via").attr('placeholder', Locale.geocoderInput).attr('title', Locale.via);
 	$("#planner-options-dest").attr('placeholder', Locale.geocoderInput).attr('title', Locale.to);
