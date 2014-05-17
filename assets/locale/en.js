@@ -1,7 +1,8 @@
 var Locale = {}
 
-Locale.dateFormat = 'mm-dd-yyyy';
+Locale.dateFormat = 'dd-mm-yy';
 Locale.timeFormat = 'hh:mm';
+Locale.dateAriaLabel = 'Date, use Ctrl en arrow keys to navigate, enter to choose';
 Locale.loading = "Loading...";
 Locale.edit = "Change trip";
 Locale.plan = "Plan trip";
@@ -21,6 +22,7 @@ Locale.date = "Date";
 Locale.time = "Time";
 Locale.months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 Locale.days = ['Sunday','Monday','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+Locale.daysMin = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 Locale.earlier = 'Earlier';
 Locale.later = 'Later';
 Locale.noAdviceFound = 'No valid trips found';

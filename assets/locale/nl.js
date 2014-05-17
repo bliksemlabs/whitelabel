@@ -1,7 +1,8 @@
 var Locale = {}
 
-Locale.dateFormat = 'mm-dd-jjjj';
+Locale.dateFormat = 'dd-mm-yy';
 Locale.timeFormat = 'hh:mm';
+Locale.dateAriaLabel = 'Datumkiezer, gebruik Ctrl en pijltjes om te navigeren';
 Locale.loading = "Bezig...";
 Locale.edit = "Wijzig reis";
 Locale.plan = "Plan reis";
@@ -21,6 +22,7 @@ Locale.date = "Datum";
 Locale.time = "Tijd";
 Locale.months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 Locale.days = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+Locale.daysMin = ['zo','ma','di','wo','do','vr','za'];
 Locale.earlier = 'Eerder';
 Locale.later = 'Later';
 Locale.noAdviceFound = 'Geen reisadvies gevonden';
