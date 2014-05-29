@@ -522,7 +522,7 @@ function setupDatetime(){
     var date = currentTime.getFullYear() + '-' + pad(currentTime.getMonth() + 1) + '-' + pad(currentTime.getDate());
     setDate(date);
     $("#planner-options-date").datepicker( {
-       dateFormat: Locale.dateFormatPicker,
+       dateFormat: Locale.dateFormat,
        dayNames: Locale.days,
        dayNamesMin : Locale.daysMin,
        monthNames: Locale.months,
@@ -698,7 +698,7 @@ function switchLocale() {
 	$(".planner-options-timeformat").text(Locale.timeFormat);
 
   $("#planner-options-date").datepicker('option', {
-      dateFormat: Locale.dateFormatPicker, /* Also need this on init */
+      dateFormat: Locale.dateFormat, /* Also need this on init */
       dayNames: Locale.days,
       dayNamesMin : Locale.daysMin,
       monthNames: Locale.months
