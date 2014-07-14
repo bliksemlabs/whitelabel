@@ -305,10 +305,18 @@ function prettyDateEpoch(epoch){
 function timeFromEpoch(epoch){
   var date = new Date(epoch);
   var minutes = date.getMinutes();
+  var hours = date.getHours();
   if (date.getSeconds()>= 30){
       minutes += 1;
   }
-  return String(date.getHours()).lpad('0',2)+':'+String(minutes).lpad('0',2);
+  if (minutes >= 60){
+      hours += minutes / 60;
+      minutes = minutes % 60;
+  }
+  if (hours >= 24){
+      hours = hours % 24;
+  }
+  return String(hours).lpad('0',2)+':'+String(minutes).lpad('0',2);
 }
 
 var itineraries = null;
