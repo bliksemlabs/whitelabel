@@ -351,8 +351,28 @@ function timeFromEpoch(epoch){
 
 var itineraries = null;
 
+// From Greg Dean's proper case function
+// Source: http://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
+String.prototype.toProperCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
+
+// Converting meter distances to mile or feet strings for output
+function toImperial(distance) {
+  distanceInFeet = distance * 3.28084;
+  // Return in miles if quarter mile or greater
+  if (distanceInFeet >= 1320) {
+    imperialDistance = (distanceInFeet * 0.000189394).toFixed(2);
+    distanceString = imperialDistance + " miles";
+  }
+  else {
+    imperialDistance = distanceInFeet.toFixed(2);
+    distanceString = imperialDistance + " feet";
+  }
+  return distanceString;
+}
+
 function legItem(leg){
-  console.log(leg);
     var legItem = $('<li class="list-group-item advice-leg"><div></div></li>');
     if (leg.mode == 'WALK'){
         if (leg.from.name == leg.to.name){
@@ -388,18 +408,25 @@ function legItem(leg){
         endTime += '<span class="ontime"> ✓</span>';
     }
 
+    var fromName = leg.from.name;
+    if (leg.from.name.includes("alley")) {
+      fromName = "Alley";
+    }
+
     if (leg.from.platformCode && leg.mode == 'RAIL'){
-        legItem.append('<div><b>'+startTime+'</b> '+leg.from.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.from.platformCode+'</div>');
+        legItem.append('<div><b>'+startTime+'</b> '+fromName+' <small class="grey">'+Locale.platformrail+'</small> '+leg.from.platformCode+'</div>');
     }else if (leg.from.platformCode && leg.mode != 'WALK'){
-        legItem.append('<div><b>'+startTime+'</b> '+leg.from.name+' <small class="grey">'+Locale.platform+'</small> '+leg.from.platformCode+'</div>');
+        legItem.append('<div><b>'+startTime+'</b> '+fromName+' <small class="grey">'+Locale.platform+'</small> '+leg.from.platformCode+'</div>');
     }else{
-        legItem.append('<div><b>'+startTime+'</b> '+leg.from.name+'</div>');
+        legItem.append('<div><b>'+startTime+'</b> '+fromName+'</div>');
     }
 
     for (var stepIdx = 0; stepIdx < leg.steps.length; ++stepIdx) {
-      legItem.append('<div class="step-item">' + leg.steps[stepIdx].relativeDirection +
-        ' on ' + leg.steps[stepIdx].streetName + ' to go ' + leg.steps[stepIdx].absoluteDirection +
-        ' for ' + leg.steps[stepIdx].distance + ' meters');
+      legItem.append('<div class="step-item"><span class="glyphicon glyphicon-chevron-right"></span>' +
+        leg.steps[stepIdx].relativeDirection.toProperCase() + ' on ' +
+        leg.steps[stepIdx].streetName + ' to go ' +
+        leg.steps[stepIdx].absoluteDirection.toProperCase() + ' for ' +
+        toImperial(leg.steps[stepIdx].distance) + '</div>');
     }
 
     if (leg.to.platformCode && leg.mode == 'RAIL'){
@@ -413,12 +440,64 @@ function legItem(leg){
     return legItem;
 }
 
+// Making these globally accessible for use later
+var map;
+var routePolyline;
+
+// Take polylines from legs, combine them into a map for easy display
+function renderLegsMap(legGeometries) {
+  var polylinePoints = [];
+  for (var p = 0; p < legGeometries.length; ++p) {
+    var polylineLocations = polyline.decode(legGeometries[p]);
+    polylinePoints = polylinePoints.concat(polylineLocations);
+  }
+
+  map = L.map('map');
+  var osmUrl='http://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png';
+  var osmAttrib='Data from <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors. Tiles from <a href="http://www.thunderforest.com/transport/">Andy Allan</a>';
+  var osm = new L.TileLayer(osmUrl, {minZoom: 10, maxZoom: 18, attribution: osmAttrib});
+  var center = new L.LatLng(41.878114, -87.629798);
+  map.setView(center, 12);
+  map.addLayer(osm);
+
+  routePolyline = new L.polyline(polylinePoints, {
+    color: 'blue',
+    weight: 5,
+    opacity: 0.75,
+    smoothFactor: 1
+  });
+
+  routePolyline.addTo(map);
+  map.fitBounds(routePolyline.getBounds());
+}
+
+function toggleMapDisplay() {
+  $('#map').toggle('slow', function() {
+    // Have to wait for resizing and then update the map so it doesn't look odd
+    map.invalidateSize();
+    map.fitBounds(routePolyline.getBounds());
+    $('#map').ScrollTo({
+        duration: 200,
+        easing: 'linear'
+    });
+  });
+}
+
 function renderItinerary(idx,moveto){
     $('#planner-leg-list').html('');
     var itin = itineraries[idx];
+    var legGeometries = [];
     $.each( itin.legs , function( index, leg ){
         $('#planner-leg-list').append(legItem(leg));
+        legGeometries.push(leg.legGeometry.points);
     });
+    var mapToggleButton = $('<button type="button"' +
+        ' class="btn btn-primary" id="map-toggle"' +
+        ' onclick="toggleMapDisplay()">Toggle Route Map</button>');
+    $('#planner-leg-list').append(mapToggleButton);
+    $('#planner-leg-list').append("<div id='map'></div>")
+    renderLegsMap(legGeometries);
+
     if ( moveto && $(this).width() < 981 ) {
         $('#planner-leg-list').ScrollTo({
             duration: 500,
@@ -467,8 +546,10 @@ function planItinerary(plannerreq){
     $('#planner-advice-list').append('<button type="button" class="btn btn-primary" id="planner-advice-later" data-loading-text="'+Locale.loading+'" onclick="laterAdvice()">'+Locale.later+'</button>');
     $('#planner-advice-list').find('.planner-advice-itinbutton').first().click();
     $('#planner-options-submit').button('reset');
-    earlierAdvice();
-    laterAdvice();
+    // Removed earlier and later advice automatically loading because often seem
+    // redundant
+    //earlierAdvice();
+    //laterAdvice();
   });
 }
 
