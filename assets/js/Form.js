@@ -1,4 +1,4 @@
-var planningserver = whitelabel_prefix+'/rrrr?';
+var planningserver = whitelabel_prefix+'/plan?';
 
 String.prototype.lpad = function(padString, length) {
     var str = this;
@@ -60,23 +60,45 @@ var bag42 = function( request, response ) {
 
 var bliksem_geocoder = function( request, response ) {
   $.ajax({
-    url: whitelabel_prefix+"/geocoder/" + request.term + '*',
+    url: whitelabel_prefix + "/geocode?query=" + request.term.replace(/ /g, '+') + "+",
     dataType: "json",
     success: function( data ) {
-      response( $.map( data.features, function( item ) {
+      response( $.map( data, function( item ) {
       return {
-        label: item.properties.search,
-        value: item.properties.search,
-        latlng: item.geometry.coordinates[1]+','+item.geometry.coordinates[0]
+        label: item.description,
+        value: item.description,
+        latlng: item.lat+','+item.lng
         }
       }));
     }
   });
 };
 
+var mapzen_geocoder = function( request, response ) {
+  $.ajax({
+    url: "https://search.mapzen.com/v1/autocomplete",
+    data: {
+      api_key: "search-F2Xk0nk",
+      sources: "openstreetmap",
+      "focus.point.lon": -87.63,
+      "focus.point.lat": 41.88,
+      text: request.term
+    },
+    success: function( data ) {
+      response( $.map( data.features, function( item ) {
+      return {
+        label: item.properties.label,
+        value: item.properties.label,
+        latlng: item.geometry.coordinates[1] + "," + item.geometry.coordinates[0]
+      }
+    }));
+    }
+  })
+}
+
 
 var Geocoder = Geocoder || {};
-Geocoder.geocoder = bliksem_geocoder;
+Geocoder.geocoder = mapzen_geocoder;
 
 switchLocale();
 
@@ -186,6 +208,12 @@ function getPrettyDate(){
    return Locale.days[date.getDay()] + ' ' + date.getDate() + ' ' + Locale.months[date.getMonth()];
 }
 
+function makeOtpReq(plannerreq) {
+  req = {};
+  otpReq = {};
+
+}
+
 function makeBliksemReq(plannerreq){
   req = {}
   bliksemReq = {}
@@ -195,10 +223,12 @@ function makeBliksemReq(plannerreq){
     bliksemReq['depart'] = true
   }
 
-  bliksemReq['from-latlng'] = plannerreq['fromLatLng'];
-  bliksemReq['to-latlng'] = plannerreq['toLatLng'];
+  bliksemReq['fromPlace'] = plannerreq['fromLatLng'];
+  bliksemReq['toPlace'] = plannerreq['toLatLng'];
   bliksemReq['date'] = plannerreq['date'] + 'T' + plannerreq['time'];
   bliksemReq['showIntermediateStops'] = true;
+  bliksemReq['mode'] = "TRANSIT,WALK";
+  bliksemReq['wheelchairAccessible'] = true;
   return bliksemReq;
 }
 
@@ -322,6 +352,7 @@ function timeFromEpoch(epoch){
 var itineraries = null;
 
 function legItem(leg){
+  console.log(leg);
     var legItem = $('<li class="list-group-item advice-leg"><div></div></li>');
     if (leg.mode == 'WALK'){
         if (leg.from.name == leg.to.name){
@@ -364,6 +395,13 @@ function legItem(leg){
     }else{
         legItem.append('<div><b>'+startTime+'</b> '+leg.from.name+'</div>');
     }
+
+    for (var stepIdx = 0; stepIdx < leg.steps.length; ++stepIdx) {
+      legItem.append('<div class="step-item">' + leg.steps[stepIdx].relativeDirection +
+        ' on ' + leg.steps[stepIdx].streetName + ' to go ' + leg.steps[stepIdx].absoluteDirection +
+        ' for ' + leg.steps[stepIdx].distance + ' meters');
+    }
+
     if (leg.to.platformCode && leg.mode == 'RAIL'){
         legItem.append('<div><b>'+endTime+'</b> '+leg.to.name+' <small class="grey">'+Locale.platformrail+'</small> '+leg.to.platformCode+'</div>');
     }else if (leg.to.platformCode && leg.mode != 'WALK'){
@@ -371,6 +409,7 @@ function legItem(leg){
     }else{
         legItem.append('<div><b>'+endTime+'</b> '+leg.to.name+'</div>');
     }
+
     return legItem;
 }
 
@@ -410,7 +449,7 @@ function planItinerary(plannerreq){
     itineraries = []
     $('#planner-advice-list').html('');
     $('.progress.progress-striped.active').remove();
-    if (!('itineraries' in data.plan) || data.plan.itineraries.length == 0){
+    if (data.error || data.plan.itineraries.length == 0){
         $('#planner-advice-container').prepend('<div class="row alert alert-danger" role="alert">'+Locale.noAdviceFound+'</div>');
         return;
     }
