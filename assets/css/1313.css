@@ -130,13 +130,3 @@ input[type=number]::-webkit-inner-spin-button {
 .ontime {
   color : green;
 }
-
-#map {
-  height: 500px;
-  width: 100%;
-  display: none;
-}
-
-#map-toggle {
-  width: 100%;
-}
