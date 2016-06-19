@@ -78,7 +78,7 @@ var mapzen_geocoder = function( request, response ) {
   $.ajax({
     url: "https://search.mapzen.com/v1/autocomplete",
     data: {
-      api_key: "search-F2Xk0nk",
+      api_key: "search-XXXXXXX",
       sources: "openstreetmap",
       "focus.point.lon": -87.63,
       "focus.point.lat": 41.88,
@@ -352,16 +352,28 @@ String.prototype.toProperCase = function () {
 };
 
 // Converting meter distances to mile or feet strings for output
-function toImperial(distance) {
-  distanceInFeet = distance * 3.28084;
-  // Return in miles if quarter mile or greater
-  if (distanceInFeet >= 1320) {
-    imperialDistance = (distanceInFeet * 0.000189394).toFixed(2);
-    distanceString = imperialDistance + " miles";
+// Option for US
+function toDistanceString(distance, imperial) {
+  if (imperial === true) {
+    distanceInFeet = distance * 3.28084;
+    // Return in miles if quarter mile or greater
+    if (distanceInFeet >= 1320) {
+      imperialDistance = (distanceInFeet * 0.000189394).toFixed(2);
+      distanceString = imperialDistance + " miles";
+    }
+    else {
+      imperialDistance = distanceInFeet.toFixed(2);
+      distanceString = imperialDistance + " feet";
+    }
   }
   else {
-    imperialDistance = distanceInFeet.toFixed(2);
-    distanceString = imperialDistance + " feet";
+    if (distance >= 250) {
+      kmDistance = (distance * 0.001).toFixed(2);
+      distanceString = kmDistance + " kilometers";
+    }
+    else {
+      distanceString = distance.toFixed(2) + " meters";
+    }
   }
   return distanceString;
 }
@@ -420,7 +432,7 @@ function legItem(leg){
         leg.steps[stepIdx].relativeDirection.toProperCase() + ' on ' +
         leg.steps[stepIdx].streetName + ' to go ' +
         leg.steps[stepIdx].absoluteDirection.toProperCase() + ' for ' +
-        toImperial(leg.steps[stepIdx].distance) + '</div>');
+        toDistanceString(leg.steps[stepIdx].distance, false) + '</div>');
     }
 
     if (leg.to.platformCode && leg.mode == 'RAIL'){
@@ -434,63 +446,12 @@ function legItem(leg){
     return legItem;
 }
 
-// Making these globally accessible for use later
-var map;
-var routePolyline;
-
-// Take polylines from legs, combine them into a map for easy display
-function renderLegsMap(legGeometries) {
-  var polylinePoints = [];
-  for (var p = 0; p < legGeometries.length; ++p) {
-    var polylineLocations = polyline.decode(legGeometries[p]);
-    polylinePoints = polylinePoints.concat(polylineLocations);
-  }
-
-  map = L.map('map');
-  var osmUrl='http://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png';
-  var osmAttrib='Data from <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors. Tiles from <a href="http://www.thunderforest.com/transport/">Andy Allan</a>';
-  var osm = new L.TileLayer(osmUrl, {minZoom: 10, maxZoom: 18, attribution: osmAttrib});
-  var center = new L.LatLng(41.878114, -87.629798);
-  map.setView(center, 12);
-  map.addLayer(osm);
-
-  routePolyline = new L.polyline(polylinePoints, {
-    color: 'blue',
-    weight: 5,
-    opacity: 0.75,
-    smoothFactor: 1
-  });
-
-  routePolyline.addTo(map);
-  map.fitBounds(routePolyline.getBounds());
-}
-
-function toggleMapDisplay() {
-  $('#map').toggle('slow', function() {
-    // Have to wait for resizing and then update the map so it doesn't look odd
-    map.invalidateSize();
-    map.fitBounds(routePolyline.getBounds());
-    $('#map').ScrollTo({
-        duration: 200,
-        easing: 'linear'
-    });
-  });
-}
-
 function renderItinerary(idx,moveto){
     $('#planner-leg-list').html('');
     var itin = itineraries[idx];
-    var legGeometries = [];
     $.each( itin.legs , function( index, leg ){
-        $('#planner-leg-list').append(legItem(leg));
-        legGeometries.push(leg.legGeometry.points);
-    });
-    var mapToggleButton = $('<button type="button"' +
-        ' class="btn btn-primary" id="map-toggle"' +
-        ' onclick="toggleMapDisplay()">Toggle Route Map</button>');
-    $('#planner-leg-list').append(mapToggleButton);
-    $('#planner-leg-list').append("<div id='map'></div>")
-    renderLegsMap(legGeometries);
+         $('#planner-leg-list').append(legItem(leg));
+     });
 
     if ( moveto && $(this).width() < 981 ) {
         $('#planner-leg-list').ScrollTo({
