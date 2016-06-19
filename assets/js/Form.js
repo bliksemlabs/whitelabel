@@ -98,7 +98,7 @@ var mapzen_geocoder = function( request, response ) {
 
 
 var Geocoder = Geocoder || {};
-Geocoder.geocoder = mapzen_geocoder;
+Geocoder.geocoder = bliksem_geocoder;
 
 switchLocale();
 
@@ -206,12 +206,6 @@ function getPrettyDate(){
    var date = getDate().split('-');
    date = new Date(date[0],date[1]-1,date[2]);
    return Locale.days[date.getDay()] + ' ' + date.getDate() + ' ' + Locale.months[date.getMonth()];
-}
-
-function makeOtpReq(plannerreq) {
-  req = {};
-  otpReq = {};
-
 }
 
 function makeBliksemReq(plannerreq){
